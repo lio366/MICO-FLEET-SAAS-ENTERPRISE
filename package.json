@@ -1,0 +1,47 @@
+{
+  "name": "micro-fleet-saas-enterprise",
+  "version": "3.1.0",
+  "private": true,
+  "description": "Backend SaaS multi-tenant para operaciones de flotas",
+  "main": "server/index.js",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node server/index.js",
+    "test:unit": "node 26_pruebas_estres_70.js && node 39_pruebas_sistema_completo.js",
+    "test:pg": "node tests/integration/postgres_t1_t7.js",
+    "test:pg:strict": "REQUIRE_PG_TESTS=1 node tests/integration/postgres_t1_t7.js",
+    "db:bootstrap": "node scripts/migrate.js",
+    "verify": "node scripts/verify.js",
+    "test:pg:t8": "REQUIRE_PG_TESTS=1 node tests/integration/postgres_t8_t13.js",
+    "test:pg:full": "npm run test:pg:strict && npm run test:pg:t8 && npm run test:pg:t14 && npm run test:pg:t17 && npm run test:pg:t18 && npm run test:pg:t19 && npm run test:pg:t20 && npm run test:pg:auditoria",
+    "test:pg:native": "tests/integration/run_native_pg16.sh",
+    "test:pg:t14": "REQUIRE_PG_TESTS=1 node tests/integration/postgres_t14_t16.js",
+    "test:pg:mutaciones": "python3 -I tests/integration/mutaciones_pg.py",
+    "test:pg:t17": "REQUIRE_PG_TESTS=1 node tests/integration/postgres_t17.js",
+    "test:pg:t18": "REQUIRE_PG_TESTS=1 node tests/integration/postgres_t18.js",
+    "test:pg:auditoria": "node tests/integration/auditoria_sql.js",
+    "test:pg:t19": "REQUIRE_PG_TESTS=1 node tests/integration/postgres_t19.js",
+    "inventario": "node tools/inventario.js --md docs/INVENTARIO.md",
+    "test:pg:t20": "REQUIRE_PG_TESTS=1 node tests/integration/postgres_t20.js"
+  },
+  "dependencies": {
+    "@sendgrid/mail": "^8.1.4",
+    "axios": "^1.7.9",
+    "bcryptjs": "^2.4.3",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "express-rate-limit": "^7.5.0",
+    "joi": "^17.13.3",
+    "jsonwebtoken": "^9.0.2",
+    "node-cron": "^3.0.3",
+    "openai": "^4.77.0",
+    "pg": "^8.13.1",
+    "stripe": "^17.5.0",
+    "twilio": "^5.4.0"
+  },
+  "optionalDependencies": {
+    "@tensorflow/tfjs-node": "^4.22.0"
+  }
+}

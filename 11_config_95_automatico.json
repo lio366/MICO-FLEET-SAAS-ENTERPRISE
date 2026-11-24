@@ -1,0 +1,42 @@
+{
+  "nombre": "MICRO-FLEET — Configuración 95% Automática",
+  "descripcion": "La IA hace el 95% del trabajo. El humano solo firma (1 clic) y decide imprevistos físicos.",
+
+  "automatizacion": {
+    "buscar_cargas_cada_minutos": 10,
+    "negociar_en_ingles": "AUTOMATICO",
+    "traducir_todo_a_espanol": "AUTOMATICO",
+    "asignar_mejor_camion": "AUTOMATICO",
+    "confirmar_carga": "AUTOMATICO_CON_FIRMA",
+    "enviar_documentos_shipper": "AUTOMATICO",
+    "cobrar_renta_brokers": "AUTOMATICO_STRIPE",
+    "suspender_morosos": "AUTOMATICO",
+    "resumen_diario_whatsapp": "AUTOMATICO_8AM"
+  },
+
+  "lo_que_siempre_pide_humano": [
+    "Firma del rate confirmation (1 clic en el celular)",
+    "Decisiones ante imprevistos físicos (camion descompuesto, carga danada)"
+  ],
+
+  "reglas_del_broker": {
+    "precio_minimo_por_milla": 2.10,
+    "incremento_por_ronda_negociacion": 100,
+    "rondas_maximas_negociacion": 2,
+    "zonas_prohibidas": ["NY", "CA", "NJ"],
+    "horario_maximo_carga": 18,
+    "equipos_aceptados": ["DRY_VAN", "REEFER"],
+    "peso_maximo_libras": 45000
+  },
+
+  "alertas_siempre_activas": {
+    "si_precio_final_baja_10pct_del_minimo": "AVISAR_Y_ESPERAR_FIRMA",
+    "si_carga_mas_de_300_millas_vacia": "RECHAZAR_AUTOMATICO",
+    "si_shipper_pide_llamada_telefonica": "RESPONDER_POR_TEXTO_Y_TRADUCIR"
+  },
+
+  "resumen_diario": {
+    "hora": "08:00",
+    "mensaje_ejemplo": "Ayer: 3 cargas confirmadas, $6,850, 2 negociadas al alza (+$450), 0 millas vacias. 1 esperando tu firma."
+  }
+}

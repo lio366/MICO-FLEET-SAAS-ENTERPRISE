@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Panel del Broker — Semáforo</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; font-family:Arial,sans-serif; }
+  body { background:#0d1117; color:#e6edf3; padding:16px; }
+  h1 { font-size:20px; margin-bottom:4px; }
+  .sub { color:#8b949e; font-size:13px; margin-bottom:16px; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:14px; }
+  .tarjeta { background:#161b22; border-radius:12px; padding:16px; border-left:6px solid #888; }
+  .verde  { border-color:#2ea043; } .amarillo { border-color:#d29922; }
+  .rojo   { border-color:#f85149; } .azul { border-color:#58a6ff; }
+  .tarjeta h2 { font-size:14px; color:#8b949e; text-transform:uppercase; margin-bottom:10px; }
+  .numero { font-size:34px; font-weight:bold; }
+  .detalle { font-size:13px; color:#c9d1d9; margin-top:8px; line-height:1.5; }
+  .ok { color:#2ea043; } .alerta { color:#d29922; } .peligro { color:#f85149; }
+  .lista { margin-top:6px; }
+  .lista li { list-style:none; padding:4px 0; border-bottom:1px solid #21262d; font-size:13px; }
+  .hora { text-align:right; color:#8b949e; font-size:12px; margin-top:14px; }
+  button { background:#238636; color:#fff; border:0; border-radius:8px; padding:8px 14px; font-size:13px; cursor:pointer; }
+</style>
+</head>
+<body>
+<h1>🚦 Panel del Broker — Todo lo importante en 10 segundos</h1>
+<p class="sub">Se actualiza solo cada 10 segundos. Verde = tranquilo, Amarillo = atención, Rojo = actúa YA.</p>
+
+<div class="grid">
+  <div class="tarjeta verde">
+    <h2>✅ Cargas en camino</h2>
+    <div class="numero ok" id="c-en-camino">—</div>
+    <ul class="lista" id="lista-cargas"></ul>
+  </div>
+  <div class="tarjeta azul">
+    <h2>🚛 Camiones disponibles</h2>
+    <div class="numero" id="c-camiones">—</div>
+    <div class="detalle" id="detalle-camiones"></div>
+  </div>
+  <div class="tarjeta amarillo">
+    <h2>💰 Facturas por cobrar</h2>
+    <div class="numero alerta" id="c-por-cobrar">—</div>
+    <div class="detalle" id="detalle-cobrar"></div>
+  </div>
+  <div class="tarjeta rojo">
+    <h2>🔴 Necesita tu SI (regla de oro)</h2>
+    <div class="numero peligro" id="c-pendientes">—</div>
+    <ul class="lista" id="lista-pendientes"></ul>
+    <div style="margin-top:10px"><button onclick="resolverPendientes()">Aprobar todo revisado</button></div>
+  </div>
+</div>
+
+<p class="hora" id="hora"></p>
+
+<script>
+// Cada 10 segundos pide el resumen al servidor y pinta las 4 tarjetas.
+async function refrescar() {
+  try {
+    const r = await fetch('/api/panel/resumen');
+    const d = await r.json();
+
+    document.getElementById('c-en-camino').textContent = d.cargasEnCamino.length;
+    document.getElementById('lista-cargas').innerHTML = d.cargasEnCamino
+      .map(c => `<li>${c.origen} → ${c.destino} · $${c.pago} · ${c.estado}</li>`).join('');
+
+    document.getElementById('c-camiones').textContent = d.camionesDisponibles;
+    document.getElementById('detalle-camiones').textContent =
+      `${d.camionesOcupados} ocupados · ${d.camionesOffline} sin señal`;
+
+    document.getElementById('c-por-cobrar').textContent = '$' + d.totalPorCobrar.toLocaleString();
+    document.getElementById('detalle-cobrar').innerHTML =
+      `Más vieja: <b>${d.facturaMasViejaDias} días</b> — si pasa de 30, activa cobro agresivo.`;
+
+    document.getElementById('c-pendientes').textContent = d.pendientesAprobacion.length;
+    document.getElementById('lista-pendientes').innerHTML = d.pendientesAprobacion
+      .map(p => `<li>${p.descripcion} <button onclick="aprobar('${p.id}')">✔ Sí</button></li>`).join('')
+      || '<li>Nada pendiente. Los agentes siguen trabajando solos.</li>';
+
+    document.getElementById('hora').textContent = 'Actualizado: ' + new Date().toLocaleTimeString('es-US');
+  } catch (e) {
+    document.getElementById('hora').textContent = '⚠ Sin conexión con el servidor — reintentando…';
+  }
+}
+async function aprobar(id) { await fetch('/api/aprobaciones/' + id + '/si', { method:'POST' }); refrescar(); }
+async function resolverPendientes() { await fetch('/api/aprobaciones/resolver', { method:'POST' }); refrescar(); }
+
+refrescar();
+setInterval(refrescar, 10000);
+</script>
+</body>
+</html>
