@@ -1,0 +1,29 @@
+{
+  "expo": {
+    "name": "Micro-Fleet Conductor",
+    "slug": "micro-fleet-driver",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "splash": {
+      "backgroundColor": "#0F172A"
+    },
+    "android": {
+      "package": "com.tour567.microfleetdriver",
+      "permissions": ["CAMERA", "ACCESS_FINE_LOCATION", "POST_NOTIFICATIONS"]
+    },
+    "ios": {
+      "bundleIdentifier": "com.tour567.microfleetdriver"
+    },
+    "plugins": [
+      ["expo-notifications", { "color": "#3B82F6" }],
+      ["expo-camera", { "cameraPermission": "Necesitamos la cámara para fotos de recogida y entrega." }],
+      ["expo-location", { "locationPermission": "Necesitamos tu ubicación para asignarte cargas cercanas." }]
+    ],
+    "extra": {
+      "apiUrl": "https://TU-SERVIDOR.com",
+      "wsUrl": "wss://TU-SERVIDOR.com",
+      "twilioNumero": "+1-000-000-0000"
+    }
+  }
+}
