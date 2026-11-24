@@ -1,19 +1,28 @@
-# server/services/ — ADAPTADORES A TERCEROS
+# pg-compat — driver PostgreSQL de validación
 
-Cada integración externa vive aquí como UN archivo con la misma forma:
-recibe credenciales del tenant, expone funciones pequeñas, traduce errores a
-español simple. Si un proveedor cambia o se cae, solo se toca SU archivo.
+Driver del protocolo PostgreSQL v3 en Node.js puro, sin dependencias, compatible con el subconjunto de la API de `pg` (node-postgres) que usa Micro Fleet: `Pool`, `Client`, `pool.query`, `pool.connect`/`client.release`, `pool.end`, errores con `code`/`constraint`/`detail`, y parsers de tipos equivalentes a `pg` (int8 y numeric como string, json/jsonb como objeto, timestamptz como `Date`, bytea como `Buffer`, arrays 1-D).
 
-| Archivo (a crear al conectar) | Proveedor | Para qué |
-|---|---|---|
-| `dat_board.js` | DAT / Truckstop (API del tenant) | Buscar y postear cargas (archivos 29/07) |
-| `twilio_client.js` | Twilio | SMS, WhatsApp, llamadas de voz (17/38/45) |
-| `stripe_client.js` | Stripe | Suscripciones y cobros (03) — ya probado |
-| `quickbooks_client.js` | Intuit QuickBooks | Facturación (18) |
-| `openrouter_client.js` | OpenRouter | gpt-4o-mini, nube (25) |
-| `fmcsa_client.js` | FMCSA API | Verificación carrier (33) |
-| `eia_client.js` | EIA | Precio diésel (20) |
-| `open_meteo_client.js` | Open-Meteo / NWS | Clima en ruta (35) |
+Autenticación: trust, cleartext, MD5 y SCRAM-SHA-256.
 
-Regla: ningún archivo fuera de `services/` habla con un proveedor directo.
-Los módulos 17/20/25/33/35/38/45 llaman al adaptador, nunca a la API cruda.
+## Por qué existe
+
+El 2026-11-23 el registro npm no era accesible desde el entorno de ejecución, por lo que no se pudo instalar el paquete oficial `pg`. Este driver permitió ejecutar T1–T7 contra un motor PostgreSQL 16 real. Las pruebas hablan con el servidor por TCP y SCRAM: no hay mocks ni SQLite.
+
+## Límites
+
+- No sustituye a `pg` en producción. No implementa TLS (`sslmode=require` se rechaza), COPY, cursores, LISTEN de alto nivel ni cancelación de consultas.
+- Que T1–T7 pasen con este driver no cierra el gate «Dependencias backend». Ese gate exige `package-lock.json` y un `npm ci` limpio con el `pg` oficial.
+- La evidencia obtenida con pg-compat debe reproducirse con `pg` oficial en cuanto haya acceso a npm.
+
+## Uso
+
+Exponerlo como módulo `pg` solo en el entorno de validación, nunca dentro de `node_modules` del proyecto:
+
+```bash
+mkdir -p /tmp/pgcompat/node_modules/pg
+echo "module.exports = require('$(pwd)/tools/pg-compat/index.js');" > /tmp/pgcompat/node_modules/pg/index.js
+echo '{"name":"pg","version":"0.0.0-pg-compat","main":"index.js"}' > /tmp/pgcompat/node_modules/pg/package.json
+NODE_PATH=/tmp/pgcompat/node_modules tests/integration/run_native_pg16.sh
+```
+
+`run_native_pg16.sh` registra la versión del driver en `entorno.txt` (`0.0.0-pg-compat` frente a la versión real de `pg`), así que la evidencia indica siempre con qué driver se obtuvo.
