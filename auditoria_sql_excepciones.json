@@ -1,0 +1,9 @@
+{
+  "descripcion": "Hallazgos conocidos de tests/integration/auditoria_sql.js, cada uno con su defecto abierto en docs/ERRORES.md. Un hallazgo nuevo o una excepción que ya no coincide con ningún hallazgo hacen fallar el gate.",
+  "excepciones": [
+    { "archivo": "04_cron_jobs.js", "codigo": "42703", "contiene": "column \"email\" does not exist", "defecto": "E-034", "motivo": "Planificador legado no cableado (el servidor usa server/workers/cronWorker.js); tenants no tiene email." },
+    { "archivo": "04_cron_jobs.js", "codigo": "42P01", "contiene": "relation \"driver_positions\" does not exist", "defecto": "E-032", "motivo": "driver_positions pertenece a 14_geospatial_engine.sql, que requiere PostGIS." },
+    { "archivo": "34_ifta_report.js", "codigo": "42P01", "contiene": "relation \"ifta_tasas\" does not exist", "defecto": "E-032", "motivo": "El DDL de 34 usa GEOGRAPHY (PostGIS); fuera de la secuencia de esquema." },
+    { "archivo": "34_ifta_report.js", "codigo": "42P01", "contiene": "relation \"gps_points\" does not exist", "defecto": "E-032", "motivo": "El DDL de 34 usa GEOGRAPHY (PostGIS); fuera de la secuencia de esquema." }
+  ]
+}
