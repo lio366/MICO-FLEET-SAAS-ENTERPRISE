@@ -1,0 +1,29 @@
+{
+  "descripcion": "Contratos rotos conocidos que detecta tools/inventario.js, cada uno con su defecto abierto en docs/ERRORES.md. Un hallazgo nuevo o una excepción que ya no coincide con ningún hallazgo hacen fallar la herramienta.",
+  "excepciones": [
+    {
+      "origen": "30_tarifas_inteligentes.js",
+      "destino": "20_alerta_diesel.js",
+      "miembro": "obtenerPrecioActual",
+      "defecto": "E-037"
+    },
+    {
+      "origen": "server/index.js",
+      "destino": "08_auto_dispatch_agent.js",
+      "miembro": "(clase)",
+      "defecto": "E-038"
+    },
+    {
+      "origen": "server/index.js",
+      "destino": "25_enrutador_modelos.js",
+      "miembro": "(clase)",
+      "defecto": "E-039"
+    },
+    {
+      "origen": "19_voz_ia_llamadas.js",
+      "destino": "./05_push_notifications",
+      "miembro": "(archivo)",
+      "defecto": "E-044"
+    }
+  ]
+}
